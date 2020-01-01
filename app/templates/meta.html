@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang='en'>
+<head>
+	<title>{% if title %}{{ title }} | {% endif %}Flask</title>
+</head>
+
+<body>
+	<div>
+		Flask |
+		<a href='{{ url_for("index") }}'>Home</a>
+		<a href='{{ url_for("users.clear_user") }}'>Logout</a>
+	</div>
+{% block content %}{% endblock %}
+</body>
+</html>

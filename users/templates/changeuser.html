@@ -1,0 +1,87 @@
+{% extends 'meta.html' %}
+{% block content %}
+{% if logged_in %}
+	<p>You are already logged in.</p>
+{% endif %}
+<div id='signin'>
+	<h2>Sign In</h2>
+	<form method='post' action='{{ url_for("users.change_user") }}' novalidate>
+	{{ lform.hidden_tag() }}
+	<input type='hidden' name='signin' value='true'/>
+	<p>
+		{{ lform.email.label }}<br>
+		{{ lform.email() }}<br>
+		{% for error in lform.email.errors %}
+			<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+	</p>
+	<p>
+		{{ lform.password.label }}<br>
+		{{ lform.password() }}<br>
+		{% for error in lform.password.errors %}
+			<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+	</p>
+	<p>{{ lform.submit }}</p>
+	</form>
+</div>
+
+<div id='signup' hidden>
+	<h2>Sign Up</h2>
+	<form method='post' action='{{ url_for("users.change_user") }}' novalidate>
+		{{ rform.hidden_tag() }}
+		<input type='hidden' name='signup' value='true'/>
+		<p>
+			{{ rform.username.label }}<br>
+			{{ rform.username(size=32) }}<br>
+			{% for error in rform.username.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+		</p>
+		<p>
+			{{ rform.email.label }}<br>
+			{{ rform.email() }}<br>
+			{% for error in rform.email.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+		</p>
+		<p>
+			{{ rform.password.label }}<br>
+			{{ rform.password() }}<br>
+			{% for error in rform.password.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+		</p>
+		<p>
+			{{ rform.confirm.label }}<br>
+			{{ rform.confirm() }}<br>
+		</p>
+		<p>
+			{{ rform.admin() }}
+			{{ rform.admin.label }}
+		</p>
+		<p>{{ rform.submit }}</p>
+		</form>
+</div>
+
+<a id='alt_message' href='#' onclick='login = !login;update_form();'></a><br>
+
+<script type="text/javascript">
+	let login = {% if (do == 'login') %}true{% else %}false{% endif %},
+	log_form = document.getElementById('signin'),
+	reg_form = document.getElementById('signup'),
+	alt_mess = document.getElementById('alt_message');
+
+	function update_form() {
+		log_form.hidden = !login;
+		reg_form.hidden = login;
+		if (login) {
+			alt_mess.innerHTML = `Don't have an account?`;
+		} else {
+			alt_mess.innerHTML = `Already have an account?`;
+		}
+	}
+
+	update_form();
+</script>
+{% endblock %}
