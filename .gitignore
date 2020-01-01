@@ -1,0 +1,7 @@
+# Environment
+venv/*
+.flaskenv
+
+# Python Cache Files
+/__pycache__/*
+*.pyc
