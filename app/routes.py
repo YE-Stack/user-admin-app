@@ -9,7 +9,7 @@ def index():
 	id_token = request.cookies.get('idToken')
 	user = user_info(id_token)
 	if not user:
-		return redirect(url_for('users.change_user'))
+		return redirect(url_for('users.clear_user'))
 	print(user)
 	username = user.get('name')
 	email    = user.get('email')
