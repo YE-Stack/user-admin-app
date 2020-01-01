@@ -16,29 +16,29 @@ def change_user():
 			logged_in = True
 	do = 'login'
 	if request.method == 'POST':
+		status = res = None
 		if 'signin' in request.form:
 			do = 'login'
 			if log_form.validate_on_submit():
 				print('Login Form')
 				status, res = login(log_form)
-				print(status, res)
-				if status != 200:
-					return res['error']['message'], status
-				user = user_info(res['idToken'])
-				response = redirect(url_for('index'))
-				response.set_cookie('idToken', res['idToken'])
-				return response
 		elif 'signup' in request.form:
 			do = 'register'
 			if reg_form.validate_on_submit():
 				print('Register Form')
-				status, res, user = register(reg_form)
-				print(status, res)
-				print(user.status_code, user.json())
-				response = redirect(url_for('index'))
-				response.set_cookie('idToken', res['idToken'])
-				return response
-		return render_template('changeuser.html', do=do, logged_in=logged_in, lform=log_form, rform=reg_form)
+				status, res = register(reg_form)
+
+		if status == None:
+			return render_template('changeuser.html', do=do, logged_in=logged_in, lform=log_form, rform=reg_form)
+
+		print(status, res)
+		if status != 200:
+			return render_template('error.html', error=res), status
+		user = user_info(res['idToken'])
+		response = redirect(url_for('index'))
+		response.set_cookie('idToken', res['idToken'])
+		return response
+
 	return render_template('changeuser.html', do=do, logged_in=logged_in, lform=log_form, rform=reg_form)
 
 @users_app.route('/logout')

@@ -1,4 +1,5 @@
 from requests import post
+from firebase_admin import auth
 from os import environ
 
 api_key = environ.get('API_KEY')
@@ -9,23 +10,18 @@ user_data_url      = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?
 headers = {'Content-Type': 'application/json'}
 
 def register(form):
-	email = form.email.data
-	passw = form.password.data
-	json_data = {
-		'email'            : email,
-		'password'         : passw,
-		'returnSecureToken': 'true'
-	}
-	res = post(signup_url, headers=headers, json=json_data)
-	res_user = None
-	if res.status_code == 200:
-		json_data = {
-			'idToken': res.json().get('idToken'),
-			'displayName': form.username.data,
-			'returnSecureToken': 'true'
-		}
-		res_user = post(update_profile_url, headers=headers, json=json_data)
-	return res.status_code, res.json(), res_user
+	try:
+		user = auth.create_user (
+			email=form.email.data,
+			email_verified=False,
+			password=form.password.data,
+			display_name=form.username.data
+		)
+		# auth.set_custom_user_claims(user.uid, {'admin': True})
+	except Exception as err:
+		print(str(err))
+		return 400, str(err)
+	return login(form)
 
 def login(form):
 	email = form.email.data
@@ -36,11 +32,17 @@ def login(form):
 		'returnSecureToken': 'true'
 	}
 	res = post(signin_url, headers=headers, json=json_data)
-	return res.status_code, res.json()
+	status = res.status_code
+	if status == 200:
+		res = res.json()
+	else:
+		res = res.json()['error']['message']
+	return status, res
 
 def user_info(idToken):
-	json_data = {'idToken' : idToken}
-	res = post(user_data_url, headers=headers, json=json_data)
-	if res.status_code == 200:
-		return res.json()
+	if idToken:
+		json_data = {'idToken' : idToken}
+		res = post(user_data_url, headers=headers, json=json_data)
+		if res.status_code == 200:
+			return res.json()
 	return None

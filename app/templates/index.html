@@ -2,7 +2,7 @@
 {% block content %}
 	<h1>Welcome {{ username }}!</h1>
 	<p>Registered Email : {{ email }}</p>
-	{% if is_admin %}
+	{% if admin %}
 	<h2>Admin Panel</h2>
 	{% endif %}
 {% endblock %}
