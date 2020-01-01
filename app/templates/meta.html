@@ -11,7 +11,7 @@
 		<a href='{{ url_for("users.clear_user") }}'>Logout</a>
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
-		{% for message in messages %}| <span style="color: blue;">{{ message }}</span>{% endfor %}
+		{% for message in messages %}| <span style="color: blue;">{{ message }} </span>{% endfor %}
 	{% endif %}
 {% endwith %}
 	</div>

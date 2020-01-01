@@ -52,6 +52,6 @@ def manage_users():
 		user = user_info(token)
 		if user and user.get('admin'):
 			users = list_of_users()
-			return render_template('manageusers.html', users=users)
+			return render_template('manageusers.html', title='Users', users=users)
 	flash('You are not authorized to view that!')
 	return redirect(url_for('index'))

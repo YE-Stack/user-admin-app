@@ -15,3 +15,7 @@ def index():
 	email    = user.get('email')
 	admin    = user.get('admin')
 	return render_template('index.html', title='Home', username=username, email=email, admin=admin)
+
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template('error.html', error=e), 404

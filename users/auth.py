@@ -49,6 +49,7 @@ def user_info(id_token):
 			flash('Session Expired. Login Again')
 		except auth.InvalidIdTokenError:
 			flash('Session Invalid. Login Again')
+
 	return None
 
 def list_of_users():
