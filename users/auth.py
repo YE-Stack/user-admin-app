@@ -6,19 +6,18 @@ from os import environ
 api_key = environ.get('API_KEY')
 signin_url         = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + api_key
 # signup_url         = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + api_key
-update_profile_url = 'https://identitytoolkit.googleapis.com/v1/accounts:update?key=' + api_key
+# update_profile_url = 'https://identitytoolkit.googleapis.com/v1/accounts:update?key=' + api_key
 # user_data_url      = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=' + api_key
 headers = {'Content-Type': 'application/json'}
 
 def register(form):
 	try:
-		user = auth.create_user (
+		auth.create_user (
 			email=form.email.data,
 			email_verified=False,
 			password=form.password.data,
 			display_name=form.username.data
 		)
-		# auth.set_custom_user_claims(user.uid, {'admin': True})
 	except Exception as err:
 		print(str(err))
 		return 400, str(err)
