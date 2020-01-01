@@ -1,3 +1,4 @@
+from flask import flash
 from requests import post
 from firebase_admin import auth
 from os import environ
@@ -41,9 +42,13 @@ def login(form):
 
 def user_info(id_token):
 	if id_token:
-		user = auth.verify_id_token(id_token, check_revoked=True)
-		if user:
+		try:
+			user = auth.verify_id_token(id_token, check_revoked=True)
 			return user
+		except auth.RevokedIdTokenError:
+			flash('Session Expired. Login Again')
+		except auth.InvalidIdTokenError:
+			flash('Session Invalid. Login Again')
 	return None
 
 def list_of_users():

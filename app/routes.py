@@ -8,7 +8,7 @@ from users.auth import user_info
 def index():
 	id_token = request.cookies.get('idToken')
 	user = user_info(id_token)
-	if user == None:
+	if not user:
 		return redirect(url_for('users.change_user'))
 	print(user)
 	username = user.get('name')
