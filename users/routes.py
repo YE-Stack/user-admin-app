@@ -1,19 +1,18 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 from users import users_app
 from users.forms import LoginForm, RegisterForm
-from users.auth import login, register, user_info
+from users.auth import login, register, user_info, list_of_users
 
 @users_app.route('/register', methods=['GET', 'POST'])
 @users_app.route('/login', methods=['GET', 'POST'])
 def change_user():
 	log_form = LoginForm()
 	reg_form = RegisterForm()
-	logged_in = False
 	token = request.cookies.get('idToken')
 	if token:
 		user = user_info(token)
 		if user:
-			logged_in = True
+			flash('You are already logged in.')
 	do = 'login'
 	if request.method == 'POST':
 		status = res = None
@@ -29,20 +28,30 @@ def change_user():
 				status, res = register(reg_form)
 
 		if status == None:
-			return render_template('changeuser.html', do=do, logged_in=logged_in, lform=log_form, rform=reg_form)
+			return render_template('changeuser.html', do=do, lform=log_form, rform=reg_form)
 
 		print(status, res)
 		if status != 200:
 			return render_template('error.html', error=res), status
-		user = user_info(res['idToken'])
 		response = redirect(url_for('index'))
 		response.set_cookie('idToken', res['idToken'])
 		return response
 
-	return render_template('changeuser.html', do=do, logged_in=logged_in, lform=log_form, rform=reg_form)
+	return render_template('changeuser.html', do=do, lform=log_form, rform=reg_form)
 
 @users_app.route('/logout')
 def clear_user():
 	response = redirect(url_for('users.change_user'))
 	response.set_cookie('idToken', '', expires=0)
 	return response
+
+@users_app.route('/users')
+def manage_users():
+	token = request.cookies.get('idToken')
+	if token:
+		user = user_info(token)
+		if user and user.get('admin'):
+			users = list_of_users()
+			return render_template('manageusers.html', users=users)
+	flash('You are not authorized to view that!')
+	return redirect(url_for('index'))

@@ -1,0 +1,28 @@
+{% extends 'meta.html' %}
+{% block content %}
+<br>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 15px;
+	text-align: center;
+}
+</style>
+<table style='width:100%;'>
+	<tr>
+		<th>Username</th>
+		<th>Email</th>
+		<th>Admin</th>
+	</tr>
+{% for user in users.iterate_all() %}
+	<tr>
+		<td>{{ user.display_name }}</td>
+		<td>{{ user.email }}</td>
+		<td>{% if user.custom_claims and user.custom_claims.get('admin') %}Yes{% else %}No{% endif %}</td>
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}

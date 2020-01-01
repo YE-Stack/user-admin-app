@@ -4,9 +4,9 @@ from os import environ
 
 api_key = environ.get('API_KEY')
 signin_url         = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + api_key
-signup_url         = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + api_key
+# signup_url         = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + api_key
 update_profile_url = 'https://identitytoolkit.googleapis.com/v1/accounts:update?key=' + api_key
-user_data_url      = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=' + api_key
+# user_data_url      = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=' + api_key
 headers = {'Content-Type': 'application/json'}
 
 def register(form):
@@ -39,10 +39,13 @@ def login(form):
 		res = res.json()['error']['message']
 	return status, res
 
-def user_info(idToken):
-	if idToken:
-		json_data = {'idToken' : idToken}
-		res = post(user_data_url, headers=headers, json=json_data)
-		if res.status_code == 200:
-			return res.json()
+def user_info(id_token):
+	if id_token:
+		user = auth.verify_id_token(id_token)
+		if user:
+			return user
 	return None
+
+def list_of_users():
+	users = auth.list_users()
+	return users

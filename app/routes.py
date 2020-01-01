@@ -7,9 +7,7 @@ from users.auth import user_info
 @app.route('/')
 def index():
 	id_token = request.cookies.get('idToken')
-	user = None
-	if id_token:
-		user = auth.verify_id_token(id_token)
+	user = user_info(id_token)
 	if user == None:
 		return redirect(url_for('users.change_user'))
 	print(user)

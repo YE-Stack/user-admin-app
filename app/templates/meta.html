@@ -10,6 +10,11 @@
 		<a href='{{ url_for("index") }}'>Home</a>
 		<a href='{{ url_for("users.clear_user") }}'>Logout</a>
 	</div>
+{% with messages = get_flashed_messages() %}
+	{% if messages %}<br>
+		{% for message in messages %}<span style="color: blue;">{{ message }}</span>{% endfor %}
+	{% endif %}
+{% endwith %}
 {% block content %}{% endblock %}
 </body>
 </html>
