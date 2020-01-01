@@ -41,7 +41,7 @@ def login(form):
 
 def user_info(id_token):
 	if id_token:
-		user = auth.verify_id_token(id_token)
+		user = auth.verify_id_token(id_token, check_revoked=True)
 		if user:
 			return user
 	return None
