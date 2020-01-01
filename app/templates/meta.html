@@ -8,6 +8,7 @@
 	<div>
 		Flask |
 		<a href='{{ url_for("index") }}'>Home</a>
+		<a href='{{ url_for("users.change_user") }}'>Login</a>
 		<a href='{{ url_for("users.clear_user") }}'>Logout</a>
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
