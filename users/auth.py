@@ -1,10 +1,10 @@
-from flask import flash
 from requests import post
 from firebase_admin import auth
 from os import environ
+from users import api_key
+from flask import flash, request, session
 
-api_key = environ.get('API_KEY')
-signin_url         = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + api_key
+signin_url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + api_key
 # signup_url         = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + api_key
 # update_profile_url = 'https://identitytoolkit.googleapis.com/v1/accounts:update?key=' + api_key
 # user_data_url      = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=' + api_key
@@ -19,7 +19,6 @@ def register(form):
 			display_name=form.username.data
 		)
 	except Exception as err:
-		print(str(err))
 		return 400, str(err)
 	return login(form)
 
@@ -39,16 +38,22 @@ def login(form):
 		res = res.json()['error']['message']
 	return status, res
 
-def user_info(id_token):
+def user_info(id_token=None):
+	if not id_token:
+		id_token = request.cookies.get('id_token')
 	if id_token:
+		if session.get('id_token') == id_token:
+			return session.get('user')
 		try:
 			user = auth.verify_id_token(id_token, check_revoked=True)
-			return user
+			session['id_token'] = id_token
+			session['user'] = (user.get('name'), user.get('email'), user.get('admin'))
+			return session['user']
 		except auth.RevokedIdTokenError:
-			flash('Session Expired. Login Again')
+			flash('Session Expired. Login Again.')
 		except auth.InvalidIdTokenError:
-			flash('Session Invalid. Login Again')
-
+			flash('Session Invalid. Login Again.')
+	session['id_token'] = session['user'] = None
 	return None
 
 def list_of_users():

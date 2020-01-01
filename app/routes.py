@@ -6,15 +6,13 @@ from users.auth import user_info
 @app.route('/index')
 @app.route('/')
 def index():
-	id_token = request.cookies.get('idToken')
-	user = user_info(id_token)
-	if not user:
-		return redirect(url_for('users.clear_user'))
-	print(user)
-	username = user.get('name')
-	email    = user.get('email')
-	admin    = user.get('admin')
-	return render_template('index.html', title='Home', username=username, email=email, admin=admin)
+	token = request.cookies.get('id_token')
+	if token:
+		user = user_info(token)
+		if not user:
+			return redirect(url_for('users.clear_user'))
+		return render_template('index.html', title='Home', username=user[0], email=user[1], admin=user[2])
+	return redirect(url_for('users.change_user'))
 
 @app.errorhandler(404)
 def page_not_found(e):
