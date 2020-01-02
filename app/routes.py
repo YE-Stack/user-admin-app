@@ -1,5 +1,4 @@
 from flask import render_template, request, redirect, url_for
-from firebase_admin import auth
 from app import app
 from users.auth import user_info
 

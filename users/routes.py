@@ -24,7 +24,7 @@ def change_user():
 			do = 'register'
 			if reg_form.validate_on_submit():
 				status, res = register(reg_form)
-		if status == None:
+		if status is None:
 			return render_template('changeuser.html', do=do, lform=log_form, rform=reg_form)
 		if status != 200:
 			return render_template('error.html', error=res), status

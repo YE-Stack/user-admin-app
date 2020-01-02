@@ -1,6 +1,5 @@
 from requests import post
 from firebase_admin import auth
-from os import environ
 from users import api_key
 from flask import flash, request, session
 
