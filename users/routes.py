@@ -1,54 +1,75 @@
-from flask import render_template, request, redirect, url_for, flash
-from users import users_app
-from users.forms import LoginForm, RegisterForm
-from users.auth import login, register, user_info, list_of_users
-
 import datetime
 
-@users_app.route('/register', methods=['GET', 'POST'])
-@users_app.route('/login', methods=['GET', 'POST'])
-def change_user():
-	log_form = LoginForm()
-	reg_form = RegisterForm()
-	user = user_info()
-	if user:
-		flash('You are already logged in.')
-	do = 'login'
-	if request.method == 'POST':
-		status = res = None
-		if 'signin' in request.form:
-			do = 'login'
-			if log_form.validate_on_submit():
-				status, res = login(log_form)
-		elif 'signup' in request.form:
-			do = 'register'
-			if reg_form.validate_on_submit():
-				status, res = register(reg_form)
-		if status is None:
-			return render_template('changeuser.html', do=do, lform=log_form, rform=reg_form)
-		if status != 200:
-			return render_template('error.html', error=res), status
-		id_token = res['idToken']
-		response = redirect(url_for('index'))
-		expire_cookie = datetime.datetime.now() + datetime.timedelta(seconds=int(res['expiresIn']))
-		response.set_cookie('id_token', id_token, expires=expire_cookie)
-		user_info(id_token)
-		return response
-	return render_template('changeuser.html', do=do, lform=log_form, rform=reg_form)
+from flask import request, render_template, session, redirect, url_for, flash
+from users import USERS
+from users.forms import LoginForm, RegisterForm
+from users.auth import login, register, verify, list_of_users
 
-@users_app.route('/logout')
-def clear_user():
-	response = redirect(url_for('users.change_user'))
-	response.set_cookie('id_token', expires=0)
+@USERS.route('/signin', methods=['GET', 'POST'])
+def signin():
+	form = LoginForm()
+	auth_errors = None
+	id_token = request.cookies.get('id_token')
+	if id_token:
+		flash('There is an active session.')
+	if request.method == 'POST':
+		if form.validate_on_submit():
+			status, response = login(form)
+			if status == 200:
+				success = redirect(url_for('index'))
+				success = store_id_token(success, response)
+				return success
+			auth_errors = [response]
+	return render_template('signin.html', auth_errors=auth_errors, title='Sign In', form=form)
+
+@USERS.route('/signup', methods=['GET', 'POST'])
+def signup():
+	form = RegisterForm()
+	auth_errors = None
+	id_token = request.cookies.get('id_token')
+	if id_token:
+		flash('There is an active session.')
+	if request.method == 'POST':
+		if form.validate_on_submit():
+			status, response = register(form)
+			if status == 200:
+				success = redirect(url_for('index'))
+				success = store_id_token(success, response)
+				return success
+			auth_errors = [response]
+	return render_template('signup.html', auth_errors=auth_errors, title='Sign Up', form=form)
+
+@USERS.route('/manage', methods=['GET'])
+def manage():
+	id_token = request.cookies.get('id_token')
+	status, user = verify(id_token)
+	if status == 200:
+		if user.get('admin'):
+			return render_template('manage.html', title='Manage Users', users=list_of_users())
+		flash('You are not authorized to view that!')
+		return redirect(url_for('index'))
+	flash('You are not signed in!')
+	return redirect(url_for('users.signin'))
+
+@USERS.route('/signout')
+def signout():
+	response = redirect(url_for('users.signin'))
+	response = clear_user_info(response)
+	flash('You have been signed out.')
 	return response
 
-@users_app.route('/users')
-def manage_users():
-	user = user_info()
-	if not user:
-		return redirect(url_for('users.clear_user'))
-	if user[2]:
-		users = list_of_users()
-		return render_template('manageusers.html', title='Users', users=users)
-	flash('You are not authorized to view that!')
-	return redirect(url_for('index'))
+def store_id_token(res, user):
+	expire_cookie = datetime.datetime.now() + datetime.timedelta(seconds=int(user.get('expiresIn')))
+	res.set_cookie('id_token', user.get('idToken'), expires=expire_cookie)
+	store_user_info(user)
+	return res
+
+def store_user_info(user):
+	session['username'] = user.get('displayName')
+	session['email'] = user.get('email')
+
+def clear_user_info(res):
+	res.set_cookie('id_token', expires=0)
+	session['username'] = None
+	session['email'] = None
+	return res

@@ -1,18 +1,21 @@
-from flask import render_template, request, redirect, url_for
-from app import app
-from users.auth import user_info
+from flask import request, render_template
 
-@app.route('/index')
-@app.route('/')
+from users.auth import verify
+from users.routes import store_user_info, clear_user_info
+
+from app import APP
+
+@APP.route('/index')
+@APP.route('/')
 def index():
-	token = request.cookies.get('id_token')
-	if token:
-		user = user_info(token)
-		if not user:
-			return redirect(url_for('users.clear_user'))
-		return render_template('index.html', title='Home', username=user[0], email=user[1], admin=user[2])
-	return redirect(url_for('users.change_user'))
-
-@app.errorhandler(404)
-def page_not_found(e):
-	return render_template('error.html', error=e), 404
+	response = render_template('index.html', title='Welcome')
+	id_token = request.cookies.get('id_token')
+	if id_token:
+		status, user = verify(id_token)
+		if status == 200:
+			store_user_info(user)
+			response = render_template('index.html', title='Welcome', username=user.get('name'),
+			                           email=user.get('email'), admin=user.get('admin'))
+		else:
+			response = clear_user_info(response)
+	return response

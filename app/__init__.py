@@ -1,11 +1,11 @@
 from flask import Flask
-from users import users_app
-from app.config import FlaskConfig
+from users import USERS
+from app.config import AppConfig
 
-app = Flask(__name__, template_folder='templates')
+APP = Flask(__name__, template_folder='templates')
 
-app.config.from_object(FlaskConfig())
+APP.config.from_object(AppConfig())
 
-app.register_blueprint(users_app, url_prefix='/')
+APP.register_blueprint(USERS, url_prefix='/u')
 
 from app import routes

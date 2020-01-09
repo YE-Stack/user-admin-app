@@ -1,15 +1,24 @@
-from flask import Blueprint
-from firebase_admin import credentials
+import sys
 from os import environ
 
+from flask import Blueprint
+
 import firebase_admin
+from firebase_admin import credentials
 
-users_app = Blueprint(__name__, 'users', template_folder='templates')
+USERS = Blueprint(__name__, 'users', template_folder='templates')
 
-path_to_json = environ.get('PATH_TO_JSON')
-api_key      = environ.get('API_KEY')
+PATH_TO_JSON = environ.get('PATH_TO_JSON')
+if not PATH_TO_JSON:
+	print('PATH_TO_JSON not set.')
+	sys.exit(1)
 
-cred = credentials.Certificate(path_to_json)
-firebase_app = firebase_admin.initialize_app(cred) # Not used
+API_KEY = environ.get('API_KEY')
+if not API_KEY:
+	print('API_KEY not set.')
+	sys.exit(1)
+
+CREDENTIALS = credentials.Certificate(PATH_TO_JSON)
+firebase_admin.initialize_app(CREDENTIALS)
 
 from users import routes

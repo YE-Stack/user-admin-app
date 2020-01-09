@@ -1,10 +1,7 @@
 {% extends 'meta.html' %}
 {% block content %}
-	<h1>Welcome {{ username }}!</h1>
-	<p>Registered Email : {{ email }}</p>
-	{% if admin %}
-	<h2>Admin Panel</h2>
-	<a href='{{ url_for("users.manage_users") }}'>Manage Users</a>
-	<a href='#'>Send Message</a>
-	{% endif %}
+	<h1>Welcome{% if username %} {{ username }}{% endif %}!</h1>
+{% if email %}<br>Email Address : {{ email }}{% endif %}
+<hr>
+{% if admin %}<br><a href='{{ url_for("users.manage") }}'>Admin Panel</a>{% endif %}
 {% endblock %}

@@ -1,6 +1,5 @@
 # Environment
 venv/*
-.flaskenv
 
 # Python Cache Files
 /__pycache__/*

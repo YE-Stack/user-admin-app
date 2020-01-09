@@ -1,0 +1,9 @@
+{% macro form_element(element) %}
+<p>
+	{{ element.label }}<br>
+	{{ element() }}<br>
+	{% for error in element.errors %}
+			<span style='color: red;'>[{{ error }}]</span>
+	{% endfor %}
+</p>
+{% endmacro %}

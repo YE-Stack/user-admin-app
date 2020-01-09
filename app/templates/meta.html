@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang='en'>
 <head>
-	<title>{% if title %}{{ title }} | {% endif %}Flask</title>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+	<title>{% if title %}{{ title }} | {% endif %}UA</title>
 </head>
 
 <body>
 	<div>
-		Flask |
-		<a href='{{ url_for("index") }}'>Home</a>
-		<a href='{{ url_for("users.change_user") }}'>Login</a>
-		<a href='{{ url_for("users.clear_user") }}'>Logout</a>
+		UA |
+		<a href='{{ url_for("index") }}'>Home</a> |
+		<a href='{{ url_for("users.signin") }}'>Sign In</a> |
+		<a href='{{ url_for("users.signup") }}'>Sign Up</a> |
+		<a href='{{ url_for("users.signout") }}'>Sign Out</a>
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
-		{% for message in messages %}| <span style="color: blue;">{{ message }} </span>{% endfor %}
+		{% for message in messages %}| <span style='color: blue;'>{{ message }} </span>{% endfor %}
 	{% endif %}
 {% endwith %}
 	</div>

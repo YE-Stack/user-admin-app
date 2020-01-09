@@ -1,0 +1,15 @@
+{% from 'signform.html' import form_element %}
+{% extends 'meta.html' %}
+{% block content %}
+<form method='post' action='{{ url_for("users.signin") }}' novalidate>
+	<h2>Sign In</h2>
+{% if auth_errors %}{% for error in auth_errors %}
+	<span style='color: red;'>{{ error }}</span>
+{% endfor %}{% endif %}
+	{{ form.hidden_tag() }}
+	{{ form_element(form.email) }}
+	{{ form_element(form.password) }}
+	<p>{{ form.submit }}</p>
+	<a href='{{ url_for("users.signup") }}'>Don't have an account?</a><br>
+</form>
+{% endblock %}
