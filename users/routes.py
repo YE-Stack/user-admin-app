@@ -1,6 +1,7 @@
 import datetime
 
 from flask import request, render_template, session, redirect, url_for, flash
+
 from users import USERS
 from users.forms import LoginForm, RegisterForm
 from users.auth import login, register, verify, list_of_users
