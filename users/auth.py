@@ -1,9 +1,14 @@
+import os
+import sys
 import requests
 
 from firebase_admin import auth
 from firebase_admin._auth_utils import EmailAlreadyExistsError
 
-from users import API_KEY
+API_KEY = os.environ.get('API_KEY')
+if not API_KEY:
+	print('API_KEY not set.')
+	sys.exit(1)
 
 SIGNIN_URL = f'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}'
 HEADERS = {'Content-Type': 'application/json'}
