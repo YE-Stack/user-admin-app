@@ -6,6 +6,6 @@ APP = Flask(__name__, template_folder='templates')
 
 APP.config.from_object(AppConfig())
 
-APP.register_blueprint(USERS, url_prefix='/u')
+APP.register_blueprint(USERS, url_prefix='/')
 
 from app import routes

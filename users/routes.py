@@ -39,6 +39,17 @@ def signup():
 			auth_errors = [response]
 	return render_template('signup.html', auth_errors=auth_errors, title='Sign Up', form=form)
 
+@USERS.route('/signout')
+def signout():
+	id_token = request.cookies.get('id_token')
+	response = redirect(url_for('users.signin'))
+	if not id_token:
+		flash('You are not signed in!')
+		return response
+	response = clear_user_info(response)
+	flash('You have been signed out.')
+	return response
+
 @USERS.route('/manage', methods=['GET'])
 def manage():
 	id_token = request.cookies.get('id_token')
@@ -50,17 +61,6 @@ def manage():
 		return redirect(url_for('index'))
 	flash('You are not signed in!')
 	return redirect(url_for('users.signin'))
-
-@USERS.route('/signout')
-def signout():
-	id_token = request.cookies.get('id_token')
-	response = redirect(url_for('users.signin'))
-	if not id_token:
-		flash('You are not signed in!')
-		return response
-	response = clear_user_info(response)
-	flash('You have been signed out.')
-	return response
 
 def store_id_token(res, user):
 	expire_cookie = datetime.datetime.now() + datetime.timedelta(seconds=int(user.get('expiresIn')))
