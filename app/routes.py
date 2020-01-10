@@ -1,7 +1,7 @@
 from flask import request, render_template
 
 from users.auth import verify
-from users.routes import store_user_info, clear_user_info
+from users.session import store_user_info, clear_user_info
 
 from app import APP
 

@@ -1,10 +1,9 @@
-import datetime
-
-from flask import request, render_template, session, redirect, url_for, flash
+from flask import request, render_template, redirect, url_for, flash
 
 from users import USERS
 from users.forms import LoginForm, RegisterForm
 from users.auth import login, register, verify, list_of_users
+from users.session import store_id_token, clear_user_info
 
 @USERS.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -62,19 +61,3 @@ def manage():
 		return redirect(url_for('index'))
 	flash('You are not signed in!')
 	return redirect(url_for('users.signin'))
-
-def store_id_token(res, user):
-	expire_cookie = datetime.datetime.now() + datetime.timedelta(seconds=int(user.get('expiresIn')))
-	res.set_cookie('id_token', user.get('idToken'), expires=expire_cookie)
-	store_user_info(user)
-	return res
-
-def store_user_info(user):
-	session['username'] = user.get('displayName')
-	session['email'] = user.get('email')
-
-def clear_user_info(res):
-	res.set_cookie('id_token', expires=0)
-	session['username'] = None
-	session['email'] = None
-	return res
