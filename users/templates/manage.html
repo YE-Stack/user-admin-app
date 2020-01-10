@@ -17,13 +17,23 @@ th, td {
 		<th>Username</th>
 		<th>Email</th>
 		<th>Admin</th>
+{% if superadmin %}<th>Actions</th>{% endif %}
 	</tr>
 {% for user in users.iterate_all() %}
+{% if not user.custom_claims.get('superadmin') %}
 	<tr>
 		<td>{{ user.display_name }}</td>
 		<td>{{ user.email }}</td>
-		<td>{% if user.custom_claims and user.custom_claims.get('admin') %}Yes{% else %}No{% endif %}</td>
+		<td>{% if user.custom_claims and user.custom_claims.get('admin') %}
+		{% set is_admin = True %}Yes{% else %}{% set is_admin = False %}No{% endif %}</td>
+	{% if superadmin %}
+		<td>
+{% if is_admin %}<a href='{{ url_for("users.make_admin", admin=0, uid=user.uid) }}'>Remove as Admin</a>
+{% else %}<a href='{{ url_for("users.make_admin", admin=1, uid=user.uid) }}'>Make Admin</a><br>{% endif %}
+		</td>
+	{% endif %}
 	</tr>
+{% endif %}
 {% endfor %}
 </table>
 {% endblock %}

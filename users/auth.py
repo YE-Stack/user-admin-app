@@ -49,3 +49,12 @@ def verify(id_token):
 def list_of_users():
 	users = auth.list_users()
 	return users
+
+def set_admin(uid, admin):
+	user = auth.get_user(uid)
+	claims = user.custom_claims
+	if not claims:
+		claims = {}
+	claims['admin'] = (admin == 1)
+	auth.set_custom_user_claims(user.uid, claims)
+	auth.revoke_refresh_tokens(uid)

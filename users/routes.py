@@ -2,7 +2,7 @@ from flask import request, render_template, redirect, url_for, flash
 
 from users import USERS
 from users.forms import LoginForm, RegisterForm
-from users.auth import login, register, verify, list_of_users
+from users.auth import login, register, verify, list_of_users, set_admin
 from users.session import store_id_token, clear_user_info
 
 @USERS.route('/signin', methods=['GET', 'POST'])
@@ -56,8 +56,26 @@ def manage():
 	status, user = verify(id_token)
 	if status == 200:
 		if user.get('admin'):
-			return render_template('manage.html', title='Manage Users', users=list_of_users())
+			superadmin = user.get('superadmin')
+			return render_template('manage.html', superadmin=superadmin, title='Manage Users',
+			                       users=list_of_users())
 		flash('You are not authorized to view that!')
 		return redirect(url_for('index'))
 	flash('You are not signed in!')
+	response = redirect(url_for('users.signin'))
+	response = clear_user_info(response)
+	return response
+
+@USERS.route('/manage/admin/<int:admin>/<uid>')
+def make_admin(admin, uid):
+	id_token = request.cookies.get('id_token')
+	status, user = verify(id_token)
+	if status == 200:
+		if user.get('superadmin'):
+			set_admin(uid, admin)
+		else:
+			flash('You are not authorized to do that!')
+		if user.get('admin'):
+			return redirect(url_for('users.manage'))
+		return redirect(url_for('index'))
 	return redirect(url_for('users.signin'))
