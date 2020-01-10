@@ -19,3 +19,8 @@ def index():
 		else:
 			response = clear_user_info(response)
 	return response
+
+@APP.errorhandler(404)
+def not_found(error):
+	return render_template('error.html', title='404', status='404 Not Found',
+	                       error=error.description)
