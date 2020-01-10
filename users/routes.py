@@ -73,7 +73,9 @@ def make_admin(admin, uid):
 	status, user = verify(id_token)
 	if status == 200:
 		if user.get('superadmin'):
-			set_admin(uid, admin)
+			error = set_admin(uid, admin)
+			if error:
+				flash(error)
 		else:
 			flash('You are not authorized to do that!')
 		if user.get('admin'):

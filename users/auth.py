@@ -3,7 +3,7 @@ import sys
 import requests
 
 from firebase_admin import auth
-from firebase_admin._auth_utils import EmailAlreadyExistsError
+from firebase_admin._auth_utils import EmailAlreadyExistsError, UserNotFoundError
 
 API_KEY = os.environ.get('API_KEY')
 if not API_KEY:
@@ -51,10 +51,14 @@ def list_of_users():
 	return users
 
 def set_admin(uid, admin):
-	user = auth.get_user(uid)
-	claims = user.custom_claims
-	if not claims:
-		claims = {}
-	claims['admin'] = (admin == 1)
-	auth.set_custom_user_claims(user.uid, claims)
-	auth.revoke_refresh_tokens(uid)
+	try:
+		user = auth.get_user(uid)
+		claims = user.custom_claims
+		if not claims:
+			claims = {}
+		claims['admin'] = (admin == 1)
+		auth.set_custom_user_claims(user.uid, claims)
+		auth.revoke_refresh_tokens(uid)
+	except UserNotFoundError:
+		return 'User Not Found.'
+	return None
