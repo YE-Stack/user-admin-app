@@ -1,4 +1,4 @@
-from flask import request, render_template
+from flask import request, render_template, flash
 
 from users.auth import verify
 from users.session import store_user_info, clear_user_info
@@ -17,6 +17,8 @@ def index():
 			response = render_template('index.html', title='Welcome', username=user.get('name'),
 			                           email=user.get('email'), admin=user.get('admin'))
 		else:
+			if user:
+				flash(user)
 			response = clear_user_info(response)
 	return response
 

@@ -61,7 +61,8 @@ def manage():
 			                       users=list_of_users())
 		flash('You are not authorized to view that!')
 		return redirect(url_for('index'))
-	flash('You are not signed in!')
+	if user:
+		flash(user)
 	response = redirect(url_for('users.signin'))
 	response = clear_user_info(response)
 	return response
