@@ -53,7 +53,11 @@ def manage():
 
 @USERS.route('/signout')
 def signout():
+	id_token = request.cookies.get('id_token')
 	response = redirect(url_for('users.signin'))
+	if not id_token:
+		flash('You are not signed in!')
+		return response
 	response = clear_user_info(response)
 	flash('You have been signed out.')
 	return response
