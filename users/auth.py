@@ -56,9 +56,10 @@ def set_admin(uid, admin):
 		claims = user.custom_claims
 		if not claims:
 			claims = {}
-		claims['admin'] = (admin == 1)
-		auth.set_custom_user_claims(user.uid, claims)
-		auth.revoke_refresh_tokens(uid)
+		required_status = (admin == 1)
+		if claims['admin'] != required_status:
+			auth.set_custom_user_claims(user.uid, claims)
+			auth.revoke_refresh_tokens(uid)
 	except UserNotFoundError:
 		return 'User Not Found.'
 	return None
