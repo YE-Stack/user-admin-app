@@ -20,7 +20,7 @@ th, td {
 {% if superadmin %}<th>Actions</th>{% endif %}
 	</tr>
 {% for user in users.iterate_all() %}
-{% if not user.custom_claims.get('superadmin') %}
+{% if not user.custom_claims or not user.custom_claims.get('superadmin') %}
 	<tr>
 		<td>{% if user.display_name %}{{ user.display_name }}{% else %}anonymous{% endif %}</td>
 		<td>{{ user.email }}</td>
